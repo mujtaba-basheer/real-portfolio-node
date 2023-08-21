@@ -156,17 +156,17 @@ const wallet = [
             },
         ],
     },
-    {
-        symbol: "ALUUSD",
-        info: coin_1.default["ALUUSD"],
-        transactions: [
-            {
-                date: new Date("2023-05-01"),
-                qty: 29548.746,
-                price: 0.25,
-            },
-        ],
-    },
+    // {
+    //   symbol: "ALUUSD",
+    //   info: coinInfoMap["ALUUSD"],
+    //   transactions: [
+    //     {
+    //       date: new Date("2023-05-01"),
+    //       qty: 29548.746,
+    //       price: 0.25,
+    //     },
+    //   ],
+    // },
     // {
     //   symbol: "BLURUSDT",
     //   info: coinInfoMap["BLURUSDT"],
