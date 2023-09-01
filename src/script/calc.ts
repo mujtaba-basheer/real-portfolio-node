@@ -1,6 +1,6 @@
-import wallet from "../data/wallet";
 import { Spot } from "@binance/connector";
 import * as fs from "node:fs";
+import { MongoClient } from "mongodb";
 import { config } from "dotenv";
 config();
 
@@ -58,6 +58,20 @@ type ChartsData = {
   total: CoinDayDataT[];
   overview: OverviewT;
 };
+interface AggrDoc {
+  symbol: string;
+  info: {
+    name: string;
+    color: string;
+    icon: string;
+    code: string;
+  };
+  transactions: {
+    date: Date;
+    qty: number;
+    price: number;
+  }[];
+}
 
 const apiKey = process.env.API_KEY;
 const apiSecret = process.env.SECRET_KEY;
@@ -88,6 +102,28 @@ const getHistoricalData: (symbol: string) => Promise<HistoricalPriceItemT[]> = (
 
 export const getCoinsHistoricalData = async () => {
   try {
+    const dbPassword = process.env.MONGO_DATABASE_PASSWORD;
+    const mongoUri = process.env.MONGO_CONNECTION_URI.replace(
+      "<password>",
+      encodeURIComponent(dbPassword)
+    );
+    const mongoClient = new MongoClient(mongoUri);
+    const database = mongoClient.db("portfolio");
+    const collection = database.collection("coins");
+
+    const aggrCursor = collection.aggregate<AggrDoc>([
+      {
+        $lookup: {
+          from: "transactions",
+          localField: "_id",
+          foreignField: "coin",
+          as: "transactions",
+        },
+      },
+    ]);
+    const wallet = await aggrCursor.toArray();
+    await mongoClient.close();
+
     const promises: Promise<HistoricalPriceItemT[]>[] = [];
     for (const asset of wallet) {
       promises.push(getHistoricalData(asset.symbol));

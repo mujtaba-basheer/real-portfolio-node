@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCoinsHistoricalData = void 0;
-const wallet_1 = require("../data/wallet");
 const connector_1 = require("@binance/connector");
 const fs = require("node:fs");
+const mongodb_1 = require("mongodb");
 const dotenv_1 = require("dotenv");
 (0, dotenv_1.config)();
 const apiKey = process.env.API_KEY;
@@ -28,8 +28,25 @@ const getHistoricalData = (symbol) => {
 };
 const getCoinsHistoricalData = async () => {
     try {
+        const dbPassword = process.env.MONGO_DATABASE_PASSWORD;
+        const mongoUri = process.env.MONGO_CONNECTION_URI.replace("<password>", encodeURIComponent(dbPassword));
+        const mongoClient = new mongodb_1.MongoClient(mongoUri);
+        const database = mongoClient.db("portfolio");
+        const collection = database.collection("coins");
+        const aggrCursor = collection.aggregate([
+            {
+                $lookup: {
+                    from: "transactions",
+                    localField: "_id",
+                    foreignField: "coin",
+                    as: "transactions",
+                },
+            },
+        ]);
+        const wallet = await aggrCursor.toArray();
+        await mongoClient.close();
         const promises = [];
-        for (const asset of wallet_1.default) {
+        for (const asset of wallet) {
             promises.push(getHistoricalData(asset.symbol));
         }
         const allHistoricalData = await Promise.all(promises);
@@ -43,8 +60,8 @@ const getCoinsHistoricalData = async () => {
             },
         };
         const { coins, total, overview } = chartsData;
-        for (let i = 0; i < wallet_1.default.length; i++) {
-            const asset = wallet_1.default[i];
+        for (let i = 0; i < wallet.length; i++) {
+            const asset = wallet[i];
             const historicalData = allHistoricalData[i];
             coins.push({
                 info: asset.info,
