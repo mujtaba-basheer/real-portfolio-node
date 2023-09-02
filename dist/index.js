@@ -7,7 +7,7 @@ const routes_1 = require("./routes");
 const dotenv_1 = require("dotenv");
 (0, dotenv_1.config)();
 const app = express();
-app.options("*", cors_1.default);
+app.options("*", (0, cors_1.default)());
 app.use((0, cors_1.default)());
 // @ts-ignore
 app.use(express.json({ limit: "5mb" }));

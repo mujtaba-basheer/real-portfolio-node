@@ -7,7 +7,7 @@ config();
 
 const app = express();
 
-app.options("*", cors);
+app.options("*", cors());
 app.use(cors());
 // @ts-ignore
 app.use(express.json({ limit: "5mb" }));
