@@ -37,8 +37,19 @@ const getCoinsHistoricalData = async () => {
             {
                 $lookup: {
                     from: "transactions",
-                    localField: "_id",
-                    foreignField: "coin",
+                    let: { coin_id: "$_id" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$coin", "$$coin_id"] },
+                            },
+                        },
+                        {
+                            $sort: {
+                                date: 1,
+                            },
+                        },
+                    ],
                     as: "transactions",
                 },
             },
