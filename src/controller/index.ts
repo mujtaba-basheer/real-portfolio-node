@@ -1,6 +1,7 @@
 import catchAsync from "../utils/catch-async";
 import * as fs from "node:fs/promises";
 import db from "../db";
+import updateHistoricalData from "../script/calc";
 import { config } from "dotenv";
 import { ObjectId } from "mongodb";
 config();
@@ -106,6 +107,8 @@ export const addTransaction = catchAsync(async (req, res, next) => {
       status: true,
       msg: "Added transaction successfully!",
     });
+
+    updateHistoricalData().catch((err) => console.error(err));
   } catch (error) {
     console.error(error);
     res.status(500).json({

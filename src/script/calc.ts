@@ -100,7 +100,7 @@ const getHistoricalData: (symbol: string) => Promise<HistoricalPriceItemT[]> = (
   });
 };
 
-export const getCoinsHistoricalData = async () => {
+const updateHistoricalData = async () => {
   try {
     const dbPassword = process.env.MONGO_DATABASE_PASSWORD;
     const mongoUri = process.env.MONGO_CONNECTION_URI.replace(
@@ -253,4 +253,4 @@ export const getCoinsHistoricalData = async () => {
   }
 };
 
-getCoinsHistoricalData();
+export default updateHistoricalData;

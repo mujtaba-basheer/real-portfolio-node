@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCoinsHistoricalData = void 0;
 const connector_1 = require("@binance/connector");
 const fs = require("node:fs");
 const mongodb_1 = require("mongodb");
@@ -26,7 +25,7 @@ const getHistoricalData = (symbol) => {
         });
     });
 };
-const getCoinsHistoricalData = async () => {
+const updateHistoricalData = async () => {
     try {
         const dbPassword = process.env.MONGO_DATABASE_PASSWORD;
         const mongoUri = process.env.MONGO_CONNECTION_URI.replace("<password>", encodeURIComponent(dbPassword));
@@ -158,5 +157,4 @@ const getCoinsHistoricalData = async () => {
         console.error(error);
     }
 };
-exports.getCoinsHistoricalData = getCoinsHistoricalData;
-(0, exports.getCoinsHistoricalData)();
+exports.default = updateHistoricalData;

@@ -4,6 +4,7 @@ exports.addTransaction = exports.getCoins = exports.getCoinsHistoricalData = voi
 const catch_async_1 = require("../utils/catch-async");
 const fs = require("node:fs/promises");
 const db_1 = require("../db");
+const calc_1 = require("../script/calc");
 const dotenv_1 = require("dotenv");
 const mongodb_1 = require("mongodb");
 (0, dotenv_1.config)();
@@ -67,6 +68,7 @@ exports.addTransaction = (0, catch_async_1.default)(async (req, res, next) => {
             status: true,
             msg: "Added transaction successfully!",
         });
+        (0, calc_1.default)().catch((err) => console.error(err));
     }
     catch (error) {
         console.error(error);
